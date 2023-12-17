@@ -6,11 +6,20 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { IconButton } from "react-native-paper";
 
-const todoList = [{ title: "MYSELF-1" }, { title: "MYSELF-2" }];
 export default function TodoScreen() {
+  const [todo, setTodo] = useState("");
+  const [todoList, setTodoList] = useState([]);
+  const handleAddTodo = () => {
+    if (todo == "") {
+      return;
+    }
+    setTodoList([...todoList, { id: Date.now().toString(), title: todo }]);
+    setTodo("");
+  };
+  // Todos List
   const renderTodos = ({ item, index }) => {
     return (
       <View
@@ -60,6 +69,7 @@ export default function TodoScreen() {
           paddingHorizontal: 16,
         }}
         placeholder="Add A Task"
+        onChangeText={(userText) => setTodo(userText)}
       />
       {/* Button */}
       <TouchableOpacity
@@ -74,6 +84,7 @@ export default function TodoScreen() {
           shadowOpacity: 0.8,
           shadowRadius: 3,
         }}
+        onPress={() => handleAddTodo()}
       >
         <Text
           style={{
