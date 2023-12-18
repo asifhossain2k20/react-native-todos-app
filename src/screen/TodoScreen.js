@@ -12,12 +12,20 @@ import { IconButton } from "react-native-paper";
 export default function TodoScreen() {
   const [todo, setTodo] = useState("");
   const [todoList, setTodoList] = useState([]);
+
+  //Add To Todo
   const handleAddTodo = () => {
     if (todo == "") {
       return;
     }
     setTodoList([...todoList, { id: Date.now().toString(), title: todo }]);
     setTodo("");
+  };
+
+  //delete to Todo
+  const handleDeleteTodo = (id) => {
+    const upadateTodoList = todoList.filter((todo) => todo?.id !== id);
+    setTodoList(upadateTodoList);
   };
   // Todos List
   const renderTodos = ({ item, index }) => {
@@ -50,7 +58,13 @@ export default function TodoScreen() {
           {item?.title}
         </Text>
         <IconButton icon="pencil" iconColor="#fff" />
-        <IconButton icon="trash-can" iconColor="#fff" />
+        <IconButton
+          onPress={() => {
+            handleDeleteTodo(item.id);
+          }}
+          icon="trash-can"
+          iconColor="#fff"
+        />
       </View>
     );
   };
