@@ -9,25 +9,58 @@ import {
 import React, { useState } from "react";
 import { IconButton } from "react-native-paper";
 
-export default function TodoScreen() {
+const TodoScreen = () => {
+  // Init local states
   const [todo, setTodo] = useState("");
   const [todoList, setTodoList] = useState([]);
+  const [editedTodo, setEditedTodo] = useState(null);
 
-  //Add To Todo
+  // Handle Add Todo
   const handleAddTodo = () => {
-    if (todo == "") {
-      return;
+    // sturtcure of a single todo item
+    // {
+    //  id:
+    //  title:
+    // }
+
+    if (todo === "") {
+      return; // early return
     }
+
     setTodoList([...todoList, { id: Date.now().toString(), title: todo }]);
     setTodo("");
   };
 
-  //delete to Todo
+  // Handle Delete
   const handleDeleteTodo = (id) => {
-    const upadateTodoList = todoList.filter((todo) => todo?.id !== id);
-    setTodoList(upadateTodoList);
+    const updatedTodoList = todoList.filter((todo) => todo.id !== id);
+
+    setTodoList(updatedTodoList);
   };
-  // Todos List
+
+  // Handle Edit todo
+
+  const handleEditTodo = (todo) => {
+    setEditedTodo(todo);
+    setTodo(todo.title);
+  };
+
+  // Handle Update
+
+  const handleUpdateTodo = () => {
+    const updatedTodos = todoList.map((item) => {
+      if (item.id === editedTodo.id) {
+        return { ...item, title: todo };
+      }
+
+      return item;
+    });
+    setTodoList(updatedTodos);
+    setEditedTodo(null);
+    setTodo("");
+  };
+
+  // Render todo
   const renderTodos = ({ item, index }) => {
     return (
       <View
@@ -40,79 +73,95 @@ export default function TodoScreen() {
           flexDirection: "row",
           alignItems: "center",
           shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
+          shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.8,
           shadowRadius: 3,
+          // elevation: for android
         }}
       >
         <Text
-          style={{
-            color: "#fff",
-            fontSize: 20,
-            fontWeight: "bold",
-          }}
+          style={{ color: "#fff", fontSize: 20, fontWeight: "800", flex: 1 }}
         >
-          {item?.title}
+          {item.title}
         </Text>
-        <IconButton icon="pencil" iconColor="#fff" />
+
         <IconButton
-          onPress={() => {
-            handleDeleteTodo(item.id);
-          }}
+          icon="pencil"
+          iconColor="#fff"
+          onPress={() => handleEditTodo(item)}
+        />
+        <IconButton
           icon="trash-can"
           iconColor="#fff"
+          onPress={() => handleDeleteTodo(item.id)}
         />
       </View>
     );
   };
   return (
     <View style={{ marginHorizontal: 16, marginTop: 40 }}>
-      <Text style={{ textAlign: "center", fontWeight: "bold", fontSize: 24 }}>
-        ToDo APP
-      </Text>
-      {/* Text Input */}
       <TextInput
         style={{
           borderWidth: 2,
-          backgroundColor: "#1e90ff",
+          borderColor: "#000",
           borderRadius: 6,
-          paddingVertical: 6,
+          paddingVertical: 8,
           paddingHorizontal: 16,
         }}
-        placeholder="Add A Task"
+        placeholder="Add a task"
+        value={todo}
         onChangeText={(userText) => setTodo(userText)}
       />
-      {/* Button */}
-      <TouchableOpacity
-        style={{
-          backgroundColor: "#000",
-          borderRadius: 6,
-          paddingVertical: 12,
-          marginVertical: 32,
-          alignItems: "center",
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.8,
-          shadowRadius: 3,
-        }}
-        onPress={() => handleAddTodo()}
-      >
-        <Text
+
+      {editedTodo ? (
+        <TouchableOpacity
           style={{
-            color: "#fff",
-            fontWeight: "bold",
+            backgroundColor: "#000",
+            borderRadius: 6,
+            paddingVertical: 12,
+            marginVertical: 34,
+            alignItems: "center",
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.8,
+            shadowRadius: 3,
           }}
+          onPress={() => handleUpdateTodo()}
         >
-          ADD
-        </Text>
-      </TouchableOpacity>
-      {/* Render Todo List */}
+          <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 20 }}>
+            Save
+          </Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          style={{
+            backgroundColor: "#000",
+            borderRadius: 6,
+            paddingVertical: 12,
+            marginVertical: 34,
+            alignItems: "center",
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.8,
+            shadowRadius: 3,
+          }}
+          onPress={() => handleAddTodo()}
+        >
+          <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 20 }}>
+            Add
+          </Text>
+        </TouchableOpacity>
+      )}
+
+      {/* Render todo list */}
+
       <FlatList data={todoList} renderItem={renderTodos} />
+
+      {todoList.length <= 0 && <Fallback />}
     </View>
   );
-}
+};
+
+export default TodoScreen;
 
 const styles = StyleSheet.create({});
